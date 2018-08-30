@@ -44,7 +44,7 @@ exports.updateOne=function (collectionName,json1,json2,callback) {
 	__connectDb(function (err,db) {
 		const mydb = db.db('productmanage');
 		//查询数据
-		mydb.collection(collectionName).updateOne(json1,{$set:{josn2}},function (err,data) {
+		mydb.collection(collectionName).updateOne(json1,{$set:json2},function (err,data) {
 			callback(err,data);//拿到数据执行回调函数
 			db.close();
 		});

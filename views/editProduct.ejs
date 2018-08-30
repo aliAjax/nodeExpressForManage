@@ -21,8 +21,9 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-responsive input-form">
-                        <form action="/doAdd" method="post">
+                        <form action="/doEditProduct" method="post" enctype="multipart/form-data">
                             <ul>
+                                <input type="hidden" name="_id" value="<%=list._id%>">
                                 <li>  商品名称: <input type="text" name="title" value="<%=list.title%>"/></li>
                                 <li>  商品图片: <input type="file" name="pic" />
                                     <br>
