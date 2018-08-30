@@ -42,18 +42,18 @@ app.use(session({
 }))
 
 //自定中间件  判断登陆状态
-// app.use(function (req,res,next) {
-// 	if(req.url=="/login"||req.url=="/doLogin"){
-// 		next()
-// 	}else {
-// 		if(req.session.userinfo&&req.session.userinfo.username!=""){
-// 			app.locals['userinfo']=req.session.userinfo;
-// 			next()
-// 		}else {
-// 			res.redirect("/login")
-// 		}
-// 	}
-// })
+app.use(function (req,res,next) {
+	if(req.url=="/login"||req.url=="/doLogin"){
+		next()
+	}else {
+		if(req.session.userinfo&&req.session.userinfo.username!=""){
+			app.locals['userinfo']=req.session.userinfo;
+			next()
+		}else {
+			res.redirect("/login")
+		}
+	}
+})
 
 //ejs中设置全局数据 所有页面均可使用
 // app.locals['userinof']="1111"
@@ -71,21 +71,30 @@ app.get("/login",function (req,res) {
 //获取登陆提交数据
 app.post("/doLogin",function (req,res) {
 	//获取post提交数据
-	var username=req.body.username;
-	var password=md5(req.body.password);//对密码加密
+	var form = new multiparty.Form();
+	form.uploadDir='upload'   //上传图片保存的地址     目录必须存在
 
-	Db.find("user",{username,password},function (err,data) {
-		if(data.length>0){
-			// console.info("登陆成功");
-			//登陆成功跳转商品页面并保存用户信息
-			req.session.userinfo=data[0];
-			res.redirect("/product");
-		}else {
-			// console.info("登陆失败");
-			res.send("<script>alert('登陆失败');location.href='/login'</script>")
-		};
+	form.parse(req, function(err, fields, files) {
+		if(err){
+			console.info(err);
+			return;
+		}
+		var username=fields.username[0];
+		var password=md5(fields.password[0]);
+		Db.find("user",{username,password},function (err,data) {
+			if(data.length>0){
+				// console.info("登陆成功");
+				//登陆成功跳转商品页面并保存用户信息
+				req.session.userinfo=data[0];
+				res.redirect("/product");
+			}else {
+				// console.info("登陆失败");
+				res.send("<script>alert('登陆失败');location.href='/login'</script>")
+			};
+		})
 	})
-	
+
+
 	// //连接数据库，查询数据库
 	// MongoClient.connect(dbUrl,function (err,db) {
 	// 	if(err){
